@@ -84,35 +84,35 @@ const Sidebar: NextPage = () => {
             <div className='w-full mt-10 text-center'>
               <ul>
                 <li className='inline-block mr-2 p-1'>
-                  <Link href='https://www.instagram.com/_arvind.a_/'>
+                  <Link href='https://www.instagram.com/'>
                     <a target='_blank'>
                       <i className='text-white fab fa-instagram fa-2x'></i>
                     </a>
                   </Link>
                 </li>
                 <li className='inline-block mr-2 p-1'>
-                  <Link href='https://github.com/Arvind-4'>
+                  <Link href='https://github.com/'>
                     <a target='_blank'>
                       <i className='text-white fab fa-github fa-2x'></i>
                     </a>
                   </Link>
                 </li>
                 <li className='inline-block mr-2 p-1'>
-                  <Link href='https://twitter.com/Arvind423207283'>
+                  <Link href='https://twitter.com/'>
                     <a target='_blank'>
                       <i className='text-white fab fa-twitter fa-2x'></i>
                     </a>
                   </Link>
                 </li>
                 <li className='inline-block mr-2 p-1'>
-                  <Link href='https://www.linkedin.com/in/arvind-a-840b48211/'>
+                  <Link href='https://www.linkedin.com/'>
                     <a target='_blank'>
                       <i className='text-white fab fa-linkedin fa-2x'></i>
                     </a>
                   </Link>
                 </li>
                 <li className='inline-block mr-2 p-1'>
-                  <Link href='http://arvind11.ml/'>
+                  <Link href='#'>
                     <a target='_blank'>
                       <i className='text-white fas fa-globe fa-2x'></i>
                     </a>
@@ -120,7 +120,7 @@ const Sidebar: NextPage = () => {
                 </li>
               </ul>
               <p className='text-gray-300 mt-5'>
-                All Rights Reserved. Arvind 2021
+                All Rights Reserved.
               </p>
             </div>
           </div>

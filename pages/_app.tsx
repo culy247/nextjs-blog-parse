@@ -1,8 +1,12 @@
 import type { AppProps } from 'next/app'
 import Head from 'next/head'
 import 'tailwindcss/tailwind.css'
+import { initializeParse } from '@parse/react-ssr'
+import config from '@/config'
 
-import Sidebar from '../components/Sidebar'
+initializeParse(config.PARSE_SERVER_URL, config.PARSE_APP_ID, config.PARSE_JAVASCRIPT_KEY)
+
+import Sidebar from '@/components/Sidebar'
 
 const App = ({ Component, pageProps }: AppProps) => {
   return (

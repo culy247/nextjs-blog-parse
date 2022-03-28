@@ -1,11 +1,11 @@
-import '../styles/LoadingSpinner.module.css'
+import '@/styles/Spinner.module.css'
 
-const LoadingSpinner = () => {
+const Spinner = () => {
   return (
     <>
       <div
         className='fixed top-0 left-0 z-50 w-screen h-screen flex items-center justify-center'
-        style={{ background: 'rgba(0, 0, 0, 0.3);' }}
+        style={{ background: 'rgba(0, 0, 0, 0.3)' }}
       >
         <div className='bg-white border py-2 px-5 rounded-lg flex items-center flex-col'>
           <div className='loader-dots block relative w-20 h-5 mt-2'>
@@ -23,4 +23,4 @@ const LoadingSpinner = () => {
   )
 }
 
-export default LoadingSpinner
+export default Spinner

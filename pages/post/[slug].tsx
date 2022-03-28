@@ -1,50 +1,41 @@
-import { GetStaticProps, GetStaticPaths } from 'next'
 import { ParsedUrlQuery } from 'querystring'
-import { useRouter } from 'next/router'
 
-import { base_url, PostType } from '../../constants'
-
-import SinglePost from '../../components/SinglePost'
-import LoadingSpinner from '../../components/LoadingSpinner'
+import SinglePost from '@/components/SinglePost'
+import Spinner from '@/components/Spinner'
+import useParse from '@/hooks/useParse'
+import config from '@/config'
 
 interface Params extends ParsedUrlQuery {
   slug: string
 }
 
-const SinglePostPage = ({ post }: { post: PostType }) => {
-  const router = useRouter()
-  if (router.isFallback) {
-    return <LoadingSpinner />
-  } else {
-    return <SinglePost post={post} />
-  }
+const SinglePostPage = ({ query }: { query: any }) => {
+  const  { useParseQuery } = useParse()
+  const { 
+    isLoading,
+    results,
+  } = useParseQuery(query, { 
+    enableLiveQuery: true
+  });
+
+  return (
+    <>
+      { isLoading ? <Spinner /> : <SinglePost post={results && results[0] ? results[0] : null  } />}
+    </>
+  )
 }
 
-export const getStaticProps: GetStaticProps = async (context) => {
+export async function getServerSideProps(context : any) {
   const params = context.params! as Params
-  const res = await fetch(`${base_url}/api/posts/${params.slug}/detail-view/`)
-
-  const post = await res.json()
-
-  if (Object.keys(post).length === 1) {
-    return {
-      notFound: true,
-    }
-  }
-
+  const  { Parse, encodeParseQuery } = useParse()
+  const query = new Parse.Query(config.POST_OBJECT);
+  query.include(['author', 'attachments', 'tags', 'thumbnail', 'comments']);
+  query.equalTo('slug', params.slug)
   return {
     props: {
-      post,
-    },
-    revalidate: 100,
-  }
-}
-
-export const getStaticPaths: GetStaticPaths = async () => {
-  return {
-    paths: [],
-    fallback: true,
-  }
+      query: await encodeParseQuery(query),
+    }
+  };
 }
 
 export default SinglePostPage

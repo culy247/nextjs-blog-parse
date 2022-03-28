@@ -1,16 +1,38 @@
-import { GetStaticProps } from 'next'
 import Link from 'next/link'
+import { default as config } from '@/config'
+import useParse from '@/hooks/useParse'
 
-import PostList from '../components/PostList'
+import PostList from '@/components/PostList'
+import Spinner from '@/components/Spinner'
 
-import { base_url } from '../constants'
-import { PostType } from '../constants'
+export async function getServerSideProps() {
+  const  { Parse, encodeParseQuery } = useParse()
+  const query = new Parse.Query(config.POST_OBJECT);
+  query.include(['author', 'attachments', 'tags', 'thumbnail']);
+  query.descending('createdAt');
+  query.limit(config.NUMBER_POST_PER_PAGE);
 
-const Home = ({ posts }: { posts: PostType[] }) => {
+  return {
+    props: {
+      query: await encodeParseQuery(query),
+    }
+  };
+};
+
+const Home = ({query} :any) => {
+
+  const  { useParseQuery } = useParse()
+  const { 
+    isLoading,
+    results,
+  } = useParseQuery(query, { 
+    enableLiveQuery: true
+  });
+
   return (
     <>
       <div className='min-h-screen'>
-        <PostList posts={posts} />
+        { !isLoading && results ? <PostList posts={results} /> : <Spinner /> }
       </div>
       <div className='text-center mt-4 md:mt-5'>
         <Link href={'/post/'}>
@@ -21,17 +43,6 @@ const Home = ({ posts }: { posts: PostType[] }) => {
       </div>
     </>
   )
-}
-
-export const getStaticProps: GetStaticProps = async () => {
-  const res = await fetch(`${base_url}/api/posts/list-view/`)
-  const posts: PostType[] = await res.json()
-  return {
-    props: {
-      posts,
-    },
-    revalidate: 100,
-  }
 }
 
 export default Home

@@ -1,33 +1,41 @@
-import { GetStaticProps } from 'next'
 import { useState } from 'react'
 
-import { base_url, PostType, number_of_posts_per_page } from '../../constants'
+import { default as config } from '@/config'
+import useParse from '@/hooks/useParse'
 
-import Pagination from '../../components/Pagination'
-import PostList from '../../components/PostList'
+import Pagination from '@/components/Pagination'
+import PostList from '@/components/PostList'
+import Spinner from '@/components/Spinner'
 
-const PostPage = ({ posts }: { posts: PostType[] }) => {
-  const NumberOfPostsPerPage: number = number_of_posts_per_page
+const PostPage = async ({ query, queryCount } :any) => {
   const [currentPage, setCurrentPage] = useState(1)
-  const [postsPerPage] = useState(NumberOfPostsPerPage)
+  const [postsPerPage] = useState(config.NUMBER_POST_PER_PAGE)
 
   const indexOfLastPost = currentPage * postsPerPage
   const indexOfFirstPost = indexOfLastPost - postsPerPage
-  const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost)
-  const paginate = (pageNumber: any) => setCurrentPage(pageNumber)
+  const counter = await queryCount.count();
+  const pagination = query.limit(postsPerPage).skip(indexOfFirstPost);
 
-  console.log('The Current Posts are ', currentPosts)
-  console.log('The number of Posts ', number_of_posts_per_page)
+  const  { useParseQuery } = useParse()
+
+  const { 
+    isLoading,
+    results,
+  } = useParseQuery(pagination, { 
+    enableLiveQuery: true 
+  });
+
+  const paginate = (pageNumber: any) => setCurrentPage(pageNumber)
 
   return (
     <>
       <div className='min-h-screen'>
-        <PostList posts={currentPosts} />
+        { !isLoading && results ? <PostList posts={results} /> : <Spinner /> }
       </div>
-      {posts.length > NumberOfPostsPerPage ? (
+      {counter && counter > indexOfLastPost ? (
         <Pagination
           postsPerPage={postsPerPage}
-          totalPosts={posts.length}
+          totalPosts={counter || 0}
           currentPage={currentPage}
           paginate={paginate}
         />
@@ -38,15 +46,19 @@ const PostPage = ({ posts }: { posts: PostType[] }) => {
   )
 }
 
-export const getStaticProps: GetStaticProps = async () => {
-  const res = await fetch(`${base_url}/api/posts/list-view/`)
-  const posts: PostType[] = await res.json()
+
+export async function getServerSideProps(context : any) {
+  const  { Parse, encodeParseQuery } = useParse()
+  const fecth = new Parse.Query(config.POST_OBJECT).addDescending('CreatedAt');
+
+  const query = await encodeParseQuery(fecth);
+
   return {
     props: {
-      posts,
-    },
-    revalidate: 100,
-  }
+      query: query,
+      counter: query
+    }
+  };
 }
 
 export default PostPage
